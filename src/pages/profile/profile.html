@@ -3,30 +3,9 @@
 </ion-navbar>
 
 <ion-content class="login" *ngIf="!auth.authenticated()">
-  <ion-segment [(ngModel)]="authType" color="primary">
-    <ion-segment-button value="login">
-      Login
-    </ion-segment-button>
-    <ion-segment-button value="signup">
-      Sign Up
-    </ion-segment-button>
-  </ion-segment>
-
-  <form #signForm="ngForm" (ngSubmit)="authenticate(signForm.value)">
-    <ion-item>
-      <ion-label>Username</ion-label>
-      <ion-input type="text" name="username" ngModel></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Password</ion-label>
-      <ion-input type="password" name="password" ngModel></ion-input>
-    </ion-item>
-
-    <div padding>
-      <button block type="submit">Login</button>
-    </div>
-  </form>
+  <div padding>
+    <button block (click)="login()">Login with Auth0</button>
+  </div>
 </ion-content>
 
 <ion-content *ngIf="auth.authenticated()">

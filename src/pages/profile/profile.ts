@@ -4,7 +4,7 @@ import {Headers, Http} from "@angular/http";
 import {JwtHelper} from "angular2-jwt";
 import {Storage} from "@ionic/storage";
 import {AuthService} from "../../app/services/auth/auth";
-import 'rxjs/add/operator/map';
+import "rxjs/add/operator/map";
 
 @IonicPage()
 @Component({
@@ -12,11 +12,7 @@ import 'rxjs/add/operator/map';
   templateUrl: 'profile.html',
 })
 export class Profile {
-
-  private LOGIN_URL = "http://localhost:3001/sessions/create";
-  private SIGNUP_URL = "http://localhost:3001/users";
-
-  auth: AuthService;
+  auth0: any;
 
   // When the page loads, we want the Login segment to be selected
   authType: string = "login";
@@ -27,47 +23,30 @@ export class Profile {
   jwtHelper = new JwtHelper();
   user: string;
 
-  constructor(private http: Http, private storage: Storage) {
-    this.auth = AuthService;
+  constructor(private http: Http, private storage: Storage, private auth: AuthService) {
+    this.auth0 = auth.auth0Client;
 
     storage.ready().then(() => {
       storage.get('profile').then(profile => {
-        this.user = JSON.parse(profile);
+        this.user = profile;
       }).catch(console.log);
     });
   }
 
-  authenticate(credentials) {
-    this.authType == 'login' ? this.login(credentials) : this.signup(credentials);
-  }
-
-  login(credentials) {
-    this.http.post(this.LOGIN_URL, JSON.stringify(credentials), { headers: this.contentHeader })
-      .map(res => res.json())
-      .subscribe(
-        data => this.authSuccess(data.id_token),
-        err => this.error = err
-      );
-  }
-
-  signup(credentials) {
-    this.http.post(this.SIGNUP_URL, JSON.stringify(credentials), { headers: this.contentHeader })
-      .map(res => res.json())
-      .subscribe(
-        data => this.authSuccess(data.id_token),
-        err => this.error = err
-      );
+  login() {
+    // Auth0 authorize request
+    this.auth0.authorize({
+      responseType: 'token id_token',
+      redirectUri: 'http://localhost:8100/',
+      audience: 'http://localhost:8100/api/'
+    });
   }
 
   logout() {
-    this.storage.remove('token');
+    // Remove tokens and profile and update login status subject
+    this.storage.remove('access_token');
+    this.storage.remove('id_token');
+    this.storage.remove('profile');
     this.user = null;
-  }
-
-  authSuccess(token) {
-    this.error = null;
-    this.storage.set('token', token);
-    this.user = this.jwtHelper.decodeToken(token).username;
-    this.storage.set('profile', this.user);
   }
 }

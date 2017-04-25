@@ -7,9 +7,10 @@ import {SplashScreen} from "@ionic-native/splash-screen";
 import {TabsPage} from "../pages/tabs/tabs";
 import {Profile} from "../pages/profile/profile";
 import {Quotes} from "../pages/quotes/quotes";
-import {HttpModule, Http, RequestOptions} from "@angular/http";
+import {HttpModule} from "@angular/http";
 import {IonicStorageModule} from "@ionic/storage";
-import {AuthHttp, AuthConfig} from "angular2-jwt";
+import {CallbackComponent} from "./callback.component";
+import {AuthService} from "./services/auth/auth";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {AuthHttp, AuthConfig} from "angular2-jwt";
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    AuthService
   ]
 })
 export class AppModule {}
